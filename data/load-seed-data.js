@@ -1,8 +1,10 @@
+const bcrypt = require('bcryptjs');
 const client = require('../lib/client');
 // import our seed data:
 const animals = require('./animals.js');
 const usersData = require('./users.js');
 const { getEmoji } = require('../lib/emoji.js');
+const todos = require('./todo.js');
 
 run();
 
@@ -10,19 +12,20 @@ async function run() {
 
   try {
     await client.connect();
-
+    
     const users = await Promise.all(
       usersData.map(user => {
+        const hash = bcrypt.hashSync(user.password, 8);
         return client.query(`
                       INSERT INTO users (email, hash)
                       VALUES ($1, $2)
                       RETURNING *;
                   `,
-        [user.email, user.hash]);
+        [user.email, hash]);
       })
     );
       
-    const user = users[0].rows[0];
+    const user = users[1].rows[0];
 
     await Promise.all(
       animals.map(animal => {
@@ -34,6 +37,15 @@ async function run() {
       })
     );
     
+    await Promise.all(
+      todos.map(to => {
+        return client.query(`
+                    INSERT INTO todos (todo, completed, user_id)
+                    VALUES ($1, $2, $3);
+                `,
+        [to.todo, to.completed, to.user_id]);
+      })
+    );
 
     console.log('seed data load complete', getEmoji(), getEmoji(), getEmoji());
   }
