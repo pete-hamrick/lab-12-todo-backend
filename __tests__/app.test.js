@@ -59,5 +59,22 @@ describe('app routes', () => {
 
       expect(data.body).toEqual(expectation);
     });
+
+    test('POST api/todos posts a new todo', async() => {
+      const newTodo = {
+        id: 4,
+        todo: 'take out the garbage',
+        completed: false,
+        user_id: 2
+      };
+      
+      const data = await fakeRequest(app)
+        .post('/api/todos')
+        .send(newTodo)
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200);
+      expect(data.body).toEqual(newTodo);
+    });
   });
 });
