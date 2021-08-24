@@ -76,5 +76,22 @@ describe('app routes', () => {
         .expect(200);
       expect(data.body).toEqual(newTodo);
     });
+      
+    test('PUT api/todos updates todo 2 to completed true', async() => {
+      const updateTodo = {
+        id: 2,
+        todo: 'walk the dog',
+        completed: true,
+        user_id: 2
+      };
+      
+      const data = await fakeRequest(app)
+        .put('/api/todos/2')
+        .send(updateTodo)
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200);
+      expect(data.body).toEqual(updateTodo);
+    });
   });
 });
