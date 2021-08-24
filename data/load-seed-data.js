@@ -12,7 +12,7 @@ async function run() {
 
   try {
     await client.connect();
-
+    
     const users = await Promise.all(
       usersData.map(user => {
         const hash = bcrypt.hashSync(user.password, 8);
@@ -25,7 +25,7 @@ async function run() {
       })
     );
       
-    const user = users[0].rows[0];
+    const user = users[1].rows[0];
 
     await Promise.all(
       animals.map(animal => {
